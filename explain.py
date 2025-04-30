@@ -8,6 +8,7 @@ chunks = json.load(open("golang_chunks_meta.json"))
 embed_model = SentenceTransformer("intfloat/e5-base")
 llm = Llama(model_path="models/mistral-7b-instruct-v0.2.Q4_K_M.gguf", n_ctx=4096, n_gpu_layers=32)
 
+
 def query_codebase(question: str, top_k: int = 4):
     q_embedding = embed_model.encode([question])
     D, I = index.search(q_embedding, top_k)
@@ -30,3 +31,4 @@ while True:
     prompt = build_prompt(ctx, q)
     output = llm(prompt, max_tokens=512, stop=["User:", "Question:"], echo=False)
     print("🤖", output["choices"][0]["text"].strip())
+

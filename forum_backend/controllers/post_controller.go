@@ -42,13 +42,14 @@ func GetPosts(c fiber.Ctx) error {
 func DeletePost(c fiber.Ctx) error {
 	user := c.Locals("user").(models.User)
 	postId := c.Params("id")
+	userRole := c.Locals("userRole").(string)
 
 	var post models.Post
 	if err := config.DB.First(&post, postId).Error; err != nil {
 		return c.Status(404).JSON(fiber.Map{"error": "Post not found"})
 	}
 
-	if post.UserID != user.ID {
+	if post.UserID != user.ID || userRole != "admin" {
 		return c.Status(403).JSON(fiber.Map{"error": "You can only delete your own posts"})
 	}
 

@@ -54,8 +54,9 @@ func Login(c fiber.Ctx) error {
 
 	// 生成 JWT token
 	claims := jwt.MapClaims{
-		"id":  user.ID,
-		"exp": time.Now().Add(time.Hour * 72).Unix(),
+		"id":   user.ID,
+		"role": user.Role,
+		"exp":  time.Now().Add(time.Hour * 72).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
@@ -65,4 +66,14 @@ func Login(c fiber.Ctx) error {
 	}
 
 	return c.JSON(fiber.Map{"token": t})
+}
+
+func RequireAdmin() fiber.Handler {
+	return func(c fiber.Ctx) error {
+		role := c.Locals("userRole")
+		if role != "admin" {
+			return fiber.NewError(fiber.StatusForbidden, "Admin access required")
+		}
+		return c.Next()
+	}
 }

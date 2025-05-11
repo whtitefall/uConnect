@@ -47,6 +47,8 @@ func RequireAuth(c fiber.Ctx) error {
 
 	// 将 user 保存到 context 里
 	c.Locals("user", user)
+	c.Locals("userID", user.ID)
+	c.Locals("userRole", user.Role)
 
 	return c.Next()
 }

@@ -53,13 +53,14 @@ func GetCommentsByPost(c fiber.Ctx) error {
 func DeleteComment(c fiber.Ctx) error {
 	user := c.Locals("user").(models.User)
 	commentId := c.Params("id")
+	userRole := c.Locals("userRole").(string)
 
 	var comment models.Comment
 	if err := config.DB.First(&comment, commentId).Error; err != nil {
 		return c.Status(404).JSON(fiber.Map{"error": "Comment not found"})
 	}
 
-	if comment.UserID != user.ID {
+	if comment.UserID != user.ID || userRole != "admin" {
 		return c.Status(403).JSON(fiber.Map{"error": "You can only delete your own comments"})
 	}
 

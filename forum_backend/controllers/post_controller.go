@@ -49,7 +49,9 @@ func DeletePost(c fiber.Ctx) error {
 		return c.Status(404).JSON(fiber.Map{"error": "Post not found"})
 	}
 
-	if post.UserID != user.ID || userRole != "admin" {
+	// allow administrators to delete any post
+	// users can only delete their own posts
+	if post.UserID != user.ID && userRole != "admin" {
 		return c.Status(403).JSON(fiber.Map{"error": "You can only delete your own posts"})
 	}
 

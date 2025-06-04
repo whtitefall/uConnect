@@ -60,7 +60,9 @@ func DeleteComment(c fiber.Ctx) error {
 		return c.Status(404).JSON(fiber.Map{"error": "Comment not found"})
 	}
 
-	if comment.UserID != user.ID || userRole != "admin" {
+	// allow administrators to delete any comment
+	// users can only delete their own comments
+	if comment.UserID != user.ID && userRole != "admin" {
 		return c.Status(403).JSON(fiber.Map{"error": "You can only delete your own comments"})
 	}
 
